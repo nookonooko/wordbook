@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    height: 100%;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #e5e5e5;
+    margin-top: 0;
+    padding: 20px 0;
+    margin-bottom: 3px;
+}
+
+#problem-list {
+    margin-left: 0.5%;
+    width: max(49%, 500px);
+    height: 100vh;
+    background-color: pink;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+}
+
+#problem-list table {
+    /**tableを真ん中にもってくる**/
+    margin: 0 auto;
+    
+}
+
+
+#create {
+    margin-right: 0.5%;
+    min-width: max(49%, 500px);
+    width: auto;
+    height: 100vh;
+    display: inline-block;
+    background-color: lightblue;
+    text-align: center;
+}
+
+#create a {
+    display: block;
+    margin: 10px;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border: 1px solid #e5e5e5;
+    text-decoration: none;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+table {
+    border-collapse:  collapse; /* セルの線を重ねる */
+}
+
+th {
+    min-width: 100px;
+    padding: 10px;
+}
