@@ -36,6 +36,13 @@ app.get("/", async (request, response) => {
 
 const exerciseTemplate = fs.readFileSync("./templates/exercise.html", "utf-8");
 app.get("/exercise", async (request, response) => {
+  // カードが存在しない場合は, 元のページにリダイレクト
+  const cardCount = await prisma.card.count();
+  if (cardCount === 0) {
+    response.redirect("/");
+    return;
+  }
+
   const card = await prisma.card.findFirst({
     where: { id: { gte: parseInt(request.query.index) || 0 } },
     orderBy: { id: "asc" },
