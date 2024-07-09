@@ -34,39 +34,61 @@ app.get("/", async (request, response) => {
   response.send(html);
 });
 
-const exerciseTemplate = fs.readFileSync("./templates/exercise.html", "utf-8");
-app.get("/exercise", async (request, response) => {
+const exerciseTemplateExercise = fs.readFileSync("./templates/exercise.html", "utf-8");
+const exerciseTemplateExerciseSelect = fs.readFileSync("./templates/exerciseselect.html", "utf-8");
+
+app.get("/exerciseselect", async(request, response) => {
+  response.send(exerciseTemplateExerciseSelect);
+  // response.redirect("/exercise");
+ 
+})
+
+app.post("/exercise", async (request, response) => {
   // カードが存在しない場合は, 元のページにリダイレクト
   const cardCount = await prisma.card.count();
   if (cardCount === 0) {
     response.redirect("/");
     return;
   }
+  const selectedstar = parseInt(request.body.star);
 
   const card = await prisma.card.findFirst({
-    where: { id: { gte: parseInt(request.query.index) || 0 } },
+    where: { 
+      id: { gte: parseInt(request.query.index) || 0 } , 
+      star : selectedstar
+    },
     orderBy: { id: "asc" },
   });
   const previousCard = await prisma.card.findFirst({
-    where: { id: { lt: card.id } },
+    where: { 
+      id: { lt: card.id },
+      star : selectedstar
+    },
     orderBy: { id: "desc" },
   });
   const nextCard = await prisma.card.findFirst({
-    where: { id: { gt: card.id } },
+    where: { 
+      id: { gt: card.id },
+      star : selectedstar
+    },
     orderBy: { id: "asc" },
   });
 
+
   let controlsHtml = "";
   if (previousCard !== null) {
-    controlsHtml += `<a href="/exercise?index=${previousCard.id}">前へ</a>`;
+    // controlsHtml += `<a href="/exercise?index=${previousCard.id}&star=${selectedstar}">前へ</a>`;
+    controlsHtml +=`<a href="#" onclick="sendPostRequest(${previousCard.id}, ${selectedstar}); return false;">前へ</a>`;
   }
   if (nextCard !== null) {
-    controlsHtml += `<a href="/exercise?index=${nextCard.id}">次へ</a>`;
+    // controlsHtml += `<a href="/exercise?index=${nextCard.id}&star=${selectedstar}">次へ</a>`;
+    controlsHtml +=`<a href="#" onclick="sendPostRequest(${nextCard.id}, ${selectedstar}); return false;">次へ</a>`;
   }
   if (controlsHtml !== "") {
     controlsHtml = `<h2>操作</h2>` + controlsHtml;
   }
-  const html = exerciseTemplate
+
+  const html = exerciseTemplateExercise
     .replace("<!-- question -->", card.question)
     .replace("<!-- answer -->", card.answer)
     .replace("<!-- star -->", card.star)
@@ -74,7 +96,7 @@ app.get("/exercise", async (request, response) => {
   response.send(html);
 });
 
-app.post("/create", async (request, response) => {
+app.use("/create", async (request, response) => {
   await prisma.card.create({
     data: { question: request.body.question, answer: request.body.answer, star: parseInt(request.body.star, 10)},
   });
