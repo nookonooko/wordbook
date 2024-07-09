@@ -11,4 +11,5 @@ model Card {
   id       Int    @id @default(autoincrement())
   question String
   answer  String
+  star Int
 }
