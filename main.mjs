@@ -19,6 +19,7 @@ app.get("/", async (request, response) => {
           <tr>
             <td>${escapeHTML(card.question)}</td>
             <td>${escapeHTML(card.answer)}</td>
+            <td>${escapeHTML(card.star)}</td>
             <td>
               <form action="/delete" method="post">
                 <input type="hidden" name="id" value="${card.id}" />
@@ -47,6 +48,7 @@ app.get("/exercise", async (request, response) => {
     where: { id: { gt: card.id } },
     orderBy: { id: "asc" },
   });
+
   let controlsHtml = "";
   if (previousCard !== null) {
     controlsHtml += `<a href="/exercise?index=${previousCard.id}">前へ</a>`;
@@ -54,16 +56,20 @@ app.get("/exercise", async (request, response) => {
   if (nextCard !== null) {
     controlsHtml += `<a href="/exercise?index=${nextCard.id}">次へ</a>`;
   }
+  if (controlsHtml !== "") {
+    controlsHtml = `<h2>操作</h2>` + controlsHtml;
+  }
   const html = exerciseTemplate
     .replace("<!-- question -->", card.question)
     .replace("<!-- answer -->", card.answer)
+    .replace("<!-- star -->", card.star)
     .replace("<!-- controls -->", controlsHtml);
   response.send(html);
 });
 
 app.post("/create", async (request, response) => {
   await prisma.card.create({
-    data: { question: request.body.question, answer: request.body.answer },
+    data: { question: request.body.question, answer: request.body.answer, star: parseInt(request.body.star, 10)},
   });
   response.redirect("/");
 });
